@@ -34,7 +34,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label, active }) => {
             `}
           >
             {icon}
-            <span>{label}</span>
+            <span className="line-clamp-1">{label}</span>
           </NavLink>
         </TooltipTrigger>
         <TooltipContent side="right">{label}</TooltipContent>
@@ -66,13 +66,13 @@ const DashboardLayout: React.FC = () => {
       <aside
         className={`
           fixed left-0 top-0 z-40 h-full bg-white shadow-md transition-all duration-300 ease-in-out dark:bg-gray-900
-          ${sidebarOpen ? "w-64" : "w-0 -translate-x-full"}
+          ${sidebarOpen ? "w-64 md:w-72" : "w-0 -translate-x-full"}
           ${isMobile ? "lg:relative" : ""}
         `}
       >
         <div className="h-full flex flex-col py-4">
           <div className="px-4 pb-4 mb-6 border-b">
-            <h1 className="text-xl font-bold text-primary">StaffSync</h1>
+            <h1 className="text-xl font-bold text-primary">Aginerator</h1>
           </div>
 
           <nav className="flex flex-col gap-1 px-2 flex-1">
@@ -115,7 +115,7 @@ const DashboardLayout: React.FC = () => {
         {/* Top header */}
         <header className="h-16 border-b bg-white dark:bg-gray-900 flex items-center px-4 justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -133,22 +133,22 @@ const DashboardLayout: React.FC = () => {
               </svg>
               <span className="sr-only">Menu</span>
             </Button>
-            <div className="lg:hidden text-lg font-bold">StaffSync</div>
+            <div className="lg:hidden text-lg font-bold truncate">Aginerator</div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Button variant="ghost" size="icon" className="relative">
               <BellRing size={20} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
             </Button>
             
-            <div className="flex items-center gap-3">
-              <Avatar>
+            <div className="flex items-center gap-2 md:gap-3">
+              <Avatar className="h-8 w-8 md:h-9 md:w-9">
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
-              <div className="hidden lg:block">
-                <div className="font-medium">Carolina Neves</div>
+              <div className="hidden md:block">
+                <div className="font-medium text-sm md:text-base">Carolina Neves</div>
                 <div className="text-xs text-muted-foreground">Gerente de RH</div>
               </div>
             </div>
@@ -156,7 +156,7 @@ const DashboardLayout: React.FC = () => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <main className="flex-1 p-3 md:p-6 overflow-auto">
           <Outlet />
         </main>
       </div>
