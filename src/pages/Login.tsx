@@ -10,20 +10,20 @@ const Login: React.FC = () => {
           <div className="text-white max-w-md">
             <h1 className="text-4xl font-bold mb-6">Aginerator</h1>
             <p className="text-xl mb-6">
-              Plataforma integrada para gestão e alocação de colaboradores.
+              Formação ágil e inteligente de times multidisciplinares para seus projetos.
             </p>
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Gestão completa de colaboradores</span>
+                <span>Automatização na formação de times ágeis</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Alocação inteligente em projetos</span>
+                <span>Matching por habilidades e competências</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Análise de compatibilidade por habilidades</span>
+                <span>Dashboard de visualização e alocação</span>
               </li>
             </ul>
           </div>

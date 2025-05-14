@@ -9,20 +9,20 @@ const Register: React.FC = () => {
           <div className="text-white max-w-md">
             <h1 className="text-4xl font-bold mb-6">Aginerator</h1>
             <p className="text-xl mb-6">
-              Crie sua conta e comece a gerenciar sua equipe de forma eficiente.
+              Crie sua conta e comece a formar times ágeis de alto desempenho para seus projetos.
             </p>
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Gestão completa de colaboradores</span>
+                <span>Cadastro de habilidades e experiências</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Alocação inteligente em projetos</span>
+                <span>Matching inteligente por perfil profissional</span>
               </li>
               <li className="flex items-center gap-2">
                 <div className="h-2 w-2 bg-white rounded-full" />
-                <span>Análise de compatibilidade por habilidades</span>
+                <span>Foco em papéis Scrum e multidisciplinaridade</span>
               </li>
             </ul>
           </div>
