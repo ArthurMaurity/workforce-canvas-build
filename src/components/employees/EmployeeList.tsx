@@ -173,7 +173,7 @@ const EmployeeList: React.FC = () => {
               <SelectValue placeholder="Departamento" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os departamentos</SelectItem>
+              <SelectItem value="todos">Todos os departamentos</SelectItem>
               <SelectItem value="Desenvolvimento">Desenvolvimento</SelectItem>
               <SelectItem value="Design">Design</SelectItem>
               <SelectItem value="Produto">Produto</SelectItem>
@@ -186,7 +186,7 @@ const EmployeeList: React.FC = () => {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="todos">Todos</SelectItem>
               <SelectItem value="Alocado">Alocados</SelectItem>
               <SelectItem value="Disponível">Disponíveis</SelectItem>
             </SelectContent>
