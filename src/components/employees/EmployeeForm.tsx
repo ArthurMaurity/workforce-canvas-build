@@ -20,6 +20,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { Employee } from "./EmployeeCard";
@@ -126,9 +127,30 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Cargo</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ex: Desenvolvedor Front-end" {...field} />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o cargo" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Scrum Master">Scrum Master</SelectItem>
+                    <SelectItem value="PO Interno">PO Interno</SelectItem>
+                    <SelectItem value="PO Externo">PO Externo</SelectItem>
+                    <SelectItem value="Desenvolvedor Front-end">Desenvolvedor Front-end</SelectItem>
+                    <SelectItem value="Desenvolvedor Back-end">Desenvolvedor Back-end</SelectItem>
+                    <SelectItem value="Designer UX/UI">Designer UX/UI</SelectItem>
+                    <SelectItem value="Testador (QA)">Testador (QA)</SelectItem>
+                    <SelectItem value="Analista de Dados">Analista de Dados</SelectItem>
+                    <SelectItem value="Outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Selecione o cargo principal do colaborador no time ágil
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -153,8 +175,10 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     <SelectItem value="Desenvolvimento">Desenvolvimento</SelectItem>
                     <SelectItem value="Design">Design</SelectItem>
                     <SelectItem value="Produto">Produto</SelectItem>
+                    <SelectItem value="QA & Testes">QA & Testes</SelectItem>
                     <SelectItem value="Marketing">Marketing</SelectItem>
                     <SelectItem value="Vendas">Vendas</SelectItem>
+                    <SelectItem value="Cliente">Cliente</SelectItem>
                     <SelectItem value="Administrativo">Administrativo</SelectItem>
                   </SelectContent>
                 </Select>

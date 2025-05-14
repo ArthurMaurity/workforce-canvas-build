@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Employee } from "./EmployeeCard";
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,6 +20,7 @@ const availableProjects = [
   { id: 3, name: "Redesign Website", department: "Design" },
   { id: 4, name: "Campanha Q4", department: "Marketing" },
   { id: 5, name: "Análise de Dados", department: "Produto" },
+  { id: 6, name: "Testes de Integração", department: "QA & Testes" },
 ];
 
 interface EmployeeAllocationDialogProps {
@@ -62,6 +63,9 @@ const EmployeeAllocationDialog: React.FC<EmployeeAllocationDialogProps> = ({
     <>
       <DialogHeader>
         <DialogTitle>Alocar Colaborador</DialogTitle>
+        <DialogDescription>
+          Aloque este colaborador a um time ágil de até 9 pessoas
+        </DialogDescription>
       </DialogHeader>
 
       <div className="mt-4 space-y-4">
@@ -107,9 +111,24 @@ const EmployeeAllocationDialog: React.FC<EmployeeAllocationDialogProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={employee.role}>{employee.role}</SelectItem>
-                <SelectItem value="Líder Técnico">Líder Técnico</SelectItem>
-                <SelectItem value="Gerente de Projeto">Gerente de Projeto</SelectItem>
-                <SelectItem value="Analista">Analista</SelectItem>
+                {employee.role === "Desenvolvedor Front-end" || employee.role === "Desenvolvedor Back-end" ? (
+                  <>
+                    <SelectItem value="Desenvolvedor Full-stack">Desenvolvedor Full-stack</SelectItem>
+                    <SelectItem value="Líder Técnico">Líder Técnico</SelectItem>
+                  </>
+                ) : null}
+                {employee.role === "Scrum Master" ? (
+                  <SelectItem value="Agile Coach">Agile Coach</SelectItem>
+                ) : null}
+                {employee.role === "PO Interno" || employee.role === "PO Externo" ? (
+                  <SelectItem value="Product Manager">Product Manager</SelectItem>
+                ) : null}
+                {employee.role === "Testador (QA)" ? (
+                  <>
+                    <SelectItem value="QA Líder">QA Líder</SelectItem>
+                    <SelectItem value="Especialista em Automação">Especialista em Automação</SelectItem>
+                  </>
+                ) : null}
               </SelectContent>
             </Select>
           </div>
