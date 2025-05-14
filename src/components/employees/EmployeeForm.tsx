@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,7 @@ const employeeSchema = z.object({
   location: z.string().min(2, "Localização obrigatória"),
   phone: z.string().min(8, "Telefone inválido"),
   skills: z.string(),
+  primarySkill: z.string().optional(),
   bio: z.string().optional(),
   status: z.enum(["Alocado", "Disponível"]),
 });
@@ -52,6 +53,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
 }) => {
   const { toast } = useToast();
   const isEditing = !!initialData;
+  const [availableSkills, setAvailableSkills] = useState<string[]>([]);
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
@@ -59,6 +61,7 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
       ? {
           ...initialData,
           skills: initialData.skills.join(", "),
+          primarySkill: initialData.primarySkill || "",
         }
       : {
           name: "",
@@ -68,16 +71,30 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
           location: "",
           phone: "",
           skills: "",
+          primarySkill: "",
           bio: "",
           status: "Disponível",
         },
   });
 
+  // Extract skills from the skills input to populate primarySkill dropdown
+  useEffect(() => {
+    const skillsString = form.watch("skills");
+    if (skillsString) {
+      const skillsList = skillsString.split(",").map(skill => skill.trim()).filter(skill => skill !== "");
+      setAvailableSkills(skillsList);
+    } else {
+      setAvailableSkills([]);
+    }
+  }, [form.watch("skills")]);
+
   const handleSubmit = (data: EmployeeFormValues) => {
     // Convert skills string to array
     const formattedData = {
       ...data,
-      skills: data.skills.split(",").map((skill) => skill.trim()),
+      skills: data.skills.split(",").map((skill) => skill.trim()).filter(skill => skill !== ""),
+      // Make sure primarySkill is in the skills array
+      primarySkill: data.primarySkill && data.primarySkill.trim() !== "" ? data.primarySkill : undefined
     };
     
     onSubmit(formattedData);
@@ -252,6 +269,41 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
                     {...field} 
                   />
                 </FormControl>
+                <FormDescription>
+                  Liste todas as habilidades técnicas separadas por vírgulas
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="primarySkill"
+            render={({ field }) => (
+              <FormItem className="col-span-1 md:col-span-2">
+                <FormLabel>Habilidade Principal</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a habilidade principal" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="">Nenhuma</SelectItem>
+                    {availableSkills.map((skill) => (
+                      <SelectItem key={skill} value={skill}>
+                        {skill}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Selecione a competência principal desta pessoa colaboradora
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

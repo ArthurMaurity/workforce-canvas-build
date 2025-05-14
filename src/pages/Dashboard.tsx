@@ -14,6 +14,14 @@ const Dashboard: React.FC = () => {
         </p>
       </div>
       
+      <div className="bg-muted/40 p-4 rounded-lg border border-muted mb-4">
+        <h2 className="font-medium text-lg mb-2">Aginerator - Formação de Times Ágeis</h2>
+        <p className="text-sm mb-3">
+          Visualize as competências principais de cada colaborador para montar times mais eficientes.
+          Lembre-se que cada colaborador só pode ser alocado em uma equipe por projeto.
+        </p>
+      </div>
+      
       <DashboardStats />
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 md:gap-4">

@@ -10,7 +10,8 @@ import {
   Phone,
   Mail,
   Briefcase,
-  Calendar
+  Calendar,
+  Star
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -31,6 +32,8 @@ export interface Employee {
   status: 'Alocado' | 'Disponível';
   avatar: string | null;
   skills: string[];
+  primarySkill?: string; // Added primary skill
+  teams?: { projectName: string, role: string }[]; // Added teams
 }
 
 interface EmployeeCardProps {
@@ -84,6 +87,12 @@ const EmployeeCard: React.FC<EmployeeCardProps> = ({
             <Calendar size={16} className="text-muted-foreground" />
             <span>Desde {employee.startDate}</span>
           </div>
+          {employee.primarySkill && (
+            <div className="flex items-center gap-2">
+              <Star size={16} className="text-amber-500" />
+              <span className="font-medium">{employee.primarySkill}</span>
+            </div>
+          )}
         </div>
 
         <div className="mt-4">

@@ -13,6 +13,8 @@ import {
   Edit,
   Calendar as CalendarIcon,
   User,
+  Star,
+  Briefcase,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -37,7 +39,8 @@ const employeeHistory = [
   { date: "22/04/2023", event: "Projeto", details: "Início do projeto Website Redesign" },
 ];
 
-const employeeProjects = [
+// We'll use this if no teams are provided in the employee data
+const defaultEmployeeProjects = [
   { 
     name: "Portal de Clientes", 
     role: "Desenvolvedor Frontend",
@@ -55,6 +58,17 @@ const employeeProjects = [
 ];
 
 const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) => {
+  // Format teams for display if they exist, otherwise use mock data
+  const employeeProjects = employee.teams && employee.teams.length > 0 
+    ? employee.teams.map(team => ({
+        name: team.projectName,
+        role: team.role,
+        startDate: "N/A", // We don't have this data in the current model
+        endDate: "Atual",
+        status: "Em progresso"
+      }))
+    : defaultEmployeeProjects;
+
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -72,7 +86,7 @@ const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) =
           <div>
             <h2 className="text-2xl font-bold">{employee.name}</h2>
             <p className="text-muted-foreground">{employee.role}</p>
-            <div className="mt-1 flex items-center">
+            <div className="mt-1 flex items-center gap-2">
               <Badge
                 variant={employee.status === "Alocado" ? "default" : "outline"}
                 className={
@@ -83,6 +97,13 @@ const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) =
               >
                 {employee.status}
               </Badge>
+              
+              {employee.primarySkill && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Star className="h-3 w-3 text-amber-500" />
+                  <span>{employee.primarySkill}</span>
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -127,6 +148,12 @@ const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) =
                 <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">Contratado em {employee.startDate}</span>
               </div>
+              {employee.primarySkill && (
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-medium">Habilidade principal: {employee.primarySkill}</span>
+                </div>
+              )}
             </div>
           </div>
           
@@ -134,8 +161,12 @@ const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) =
             <h3 className="text-sm font-medium text-muted-foreground">Habilidades</h3>
             <div className="flex flex-wrap gap-1">
               {employee.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {skill}
+                <Badge 
+                  key={index} 
+                  variant="secondary" 
+                  className={`text-xs ${employee.primarySkill === skill ? 'border border-amber-500' : ''}`}
+                >
+                  {skill} {employee.primarySkill === skill && <Star className="h-3 w-3 inline ml-0.5 text-amber-500" />}
                 </Badge>
               ))}
             </div>
@@ -143,11 +174,53 @@ const EmployeeProfileView: React.FC<EmployeeProfileViewProps> = ({ employee }) =
         </div>
         
         <div className="col-span-1 md:col-span-2">
-          <Tabs defaultValue="history">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs defaultValue="teams">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="teams">Equipes</TabsTrigger>
               <TabsTrigger value="history">Histórico</TabsTrigger>
               <TabsTrigger value="projects">Projetos</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="teams" className="mt-4">
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Projeto</TableHead>
+                      <TableHead>Função</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {employeeProjects.map((project, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{project.name}</TableCell>
+                        <TableCell>{project.role}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={
+                              project.status === "Concluído"
+                                ? "border-success-500 text-success-500"
+                                : "border-primary text-primary"
+                            }
+                          >
+                            {project.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {employeeProjects.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-muted-foreground py-4">
+                          Este colaborador não está em nenhuma equipe no momento
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
             
             <TabsContent value="history" className="mt-4">
               <div className="relative">
