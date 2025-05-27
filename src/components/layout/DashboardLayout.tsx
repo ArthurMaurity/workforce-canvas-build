@@ -7,7 +7,9 @@ import {
   LogOut, 
   Settings, 
   User,
-  BellRing
+  BellRing,
+  UserCog,
+  UsersIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -87,6 +89,18 @@ const DashboardLayout: React.FC = () => {
               icon={<Users size={20} />}
               label="Colaboradores"
               active={location.pathname.includes("/collaborators")}
+            />
+            <NavItem
+              to="/profile-management"
+              icon={<UserCog size={20} />}
+              label="Gerenciar Perfis"
+              active={location.pathname === "/profile-management"}
+            />
+            <NavItem
+              to="/team-management"
+              icon={<UsersIcon size={20} />}
+              label="Gerenciar Equipes"
+              active={location.pathname === "/team-management"}
             />
             <NavItem
               to="/profile"

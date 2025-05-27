@@ -12,6 +12,8 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Collaborators from "./pages/Collaborators";
 import Profile from "./pages/Profile";
+import ProfileManagement from "./pages/ProfileManagement";
+import TeamManagement from "./pages/TeamManagement";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/collaborators" element={<Collaborators />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile-management" element={<ProfileManagement />} />
+            <Route path="/team-management" element={<TeamManagement />} />
           </Route>
           
           {/* Catch All Route */}
