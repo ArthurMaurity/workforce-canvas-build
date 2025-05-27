@@ -9,7 +9,8 @@ import {
   User,
   BellRing,
   UserCog,
-  UsersIcon
+  UsersIcon,
+  Menu
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -51,11 +52,7 @@ const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(!isMobile);
 
   React.useEffect(() => {
-    if (isMobile) {
-      setSidebarOpen(false);
-    } else {
-      setSidebarOpen(true);
-    }
+    setSidebarOpen(!isMobile);
   }, [isMobile]);
 
   const toggleSidebar = () => {
@@ -63,13 +60,23 @@ const DashboardLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen bg-background">
+      {/* Mobile overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top-0 z-40 h-full bg-white shadow-md transition-all duration-300 ease-in-out dark:bg-gray-900
-          ${sidebarOpen ? "w-64 md:w-72" : "w-0 -translate-x-full"}
-          ${isMobile ? "lg:relative" : ""}
+          fixed left-0 top-0 z-50 h-full bg-white shadow-md transition-all duration-300 ease-in-out dark:bg-gray-900
+          ${sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full"}
+          lg:relative lg:z-auto
+          ${!isMobile && sidebarOpen ? "lg:translate-x-0" : ""}
+          ${!isMobile && !sidebarOpen ? "lg:-translate-x-full lg:w-0" : ""}
         `}
       >
         <div className="h-full flex flex-col py-4">
@@ -125,26 +132,17 @@ const DashboardLayout: React.FC = () => {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div 
+        className={`
+          flex flex-col min-h-screen transition-all duration-300 ease-in-out
+          ${!isMobile && sidebarOpen ? "lg:ml-64" : "lg:ml-0"}
+        `}
+      >
         {/* Top header */}
         <header className="h-16 border-b bg-white dark:bg-gray-900 flex items-center px-4 justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={toggleSidebar} className="shrink-0">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
+              <Menu size={24} />
               <span className="sr-only">Menu</span>
             </Button>
             <div className="lg:hidden text-lg font-bold truncate">Aginerator</div>
