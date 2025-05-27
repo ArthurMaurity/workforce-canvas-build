@@ -10,7 +10,8 @@ import {
   BellRing,
   UserCog,
   UsersIcon,
-  Menu
+  Menu,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -59,20 +60,28 @@ const DashboardLayout: React.FC = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile overlay */}
-      {isMobile && sidebarOpen && (
+      {/* Overlay para fechar sidebar */}
+      {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden" 
-          onClick={() => setSidebarOpen(false)}
+          className={`
+            fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ease-in-out
+            ${isMobile ? "lg:hidden" : ""}
+            ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
+          `}
+          onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top-0 z-50 h-full bg-white shadow-md transition-all duration-300 ease-in-out dark:bg-gray-900
+          fixed left-0 top-0 z-50 h-full bg-white shadow-lg transition-all duration-300 ease-in-out dark:bg-gray-900
           ${sidebarOpen ? "w-64 translate-x-0" : "w-64 -translate-x-full"}
           lg:relative lg:z-auto
           ${!isMobile && sidebarOpen ? "lg:translate-x-0" : ""}
@@ -80,8 +89,17 @@ const DashboardLayout: React.FC = () => {
         `}
       >
         <div className="h-full flex flex-col py-4">
-          <div className="px-4 pb-4 mb-6 border-b">
+          {/* Header com botão de fechar */}
+          <div className="px-4 pb-4 mb-6 border-b flex items-center justify-between">
             <h1 className="text-xl font-bold text-primary">Aginerator</h1>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={closeSidebar}
+              className="h-8 w-8 lg:hidden"
+            >
+              <X size={18} />
+            </Button>
           </div>
 
           <nav className="flex flex-col gap-1 px-2 flex-1">
@@ -141,7 +159,12 @@ const DashboardLayout: React.FC = () => {
         {/* Top header */}
         <header className="h-16 border-b bg-white dark:bg-gray-900 flex items-center px-4 justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="shrink-0">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleSidebar} 
+              className="shrink-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
               <Menu size={24} />
               <span className="sr-only">Menu</span>
             </Button>
