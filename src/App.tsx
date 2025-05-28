@@ -14,6 +14,7 @@ import Collaborators from "./pages/Collaborators";
 import Profile from "./pages/Profile";
 import ProfileManagement from "./pages/ProfileManagement";
 import TeamManagement from "./pages/TeamManagement";
+import SkillManagement from "./pages/SkillManagement";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile-management" element={<ProfileManagement />} />
             <Route path="/team-management" element={<TeamManagement />} />
+            <Route path="/skill-management" element={<SkillManagement />} />
           </Route>
           
           {/* Catch All Route */}

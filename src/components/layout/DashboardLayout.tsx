@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { 
@@ -11,7 +10,8 @@ import {
   UserCog,
   UsersIcon,
   Menu,
-  X
+  X,
+  Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -126,6 +126,12 @@ const DashboardLayout: React.FC = () => {
               icon={<UsersIcon size={20} />}
               label="Gerenciar Equipes"
               active={location.pathname === "/team-management"}
+            />
+            <NavItem
+              to="/skill-management"
+              icon={<Brain size={20} />}
+              label="Competências"
+              active={location.pathname === "/skill-management"}
             />
             <NavItem
               to="/profile"
