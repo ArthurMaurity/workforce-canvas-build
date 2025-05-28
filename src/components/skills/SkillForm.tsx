@@ -42,9 +42,14 @@ interface SkillFormProps {
   onCancel: () => void;
 }
 
-const categories = [
-  "Frontend", "Backend", "Mobile", "Design", "DevOps", 
-  "Data Science", "QA", "Metodologia", "Soft Skills", "Outro"
+const scrumCategories = [
+  "Scrum", 
+  "Eventos Scrum", 
+  "Artefatos Scrum", 
+  "Métricas Ágeis", 
+  "Soft Skills Ágeis",
+  "Ferramentas Ágeis",
+  "Coaching Ágil"
 ];
 
 const SkillForm: React.FC<SkillFormProps> = ({
@@ -87,7 +92,7 @@ const SkillForm: React.FC<SkillFormProps> = ({
               <FormItem>
                 <FormLabel>Nome da Competência</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: React, Python, UX Design..." {...field} />
+                  <Input placeholder="Ex: Scrum Master, Product Owner..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,7 +115,7 @@ const SkillForm: React.FC<SkillFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categories.map((category) => (
+                    {scrumCategories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
@@ -163,7 +168,7 @@ const SkillForm: React.FC<SkillFormProps> = ({
                 <div className="space-y-1 leading-none">
                   <FormLabel>Competência Core</FormLabel>
                   <FormDescription>
-                    Competências essenciais para a organização
+                    Competências essenciais para metodologia ágil
                   </FormDescription>
                 </div>
               </FormItem>
@@ -179,7 +184,7 @@ const SkillForm: React.FC<SkillFormProps> = ({
               <FormLabel>Descrição</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Descreva a competência e sua aplicação..."
+                  placeholder="Descreva a competência e sua aplicação no Scrum..."
                   className="resize-none min-h-[80px]"
                   {...field}
                 />

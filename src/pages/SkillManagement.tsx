@@ -20,33 +20,89 @@ export interface Skill {
 const mockSkills: Skill[] = [
   {
     id: 1,
-    name: "React",
-    category: "Frontend",
-    level: "Avançado",
-    description: "Biblioteca JavaScript para construção de interfaces",
+    name: "Scrum Master",
+    category: "Scrum",
+    level: "Expert",
+    description: "Facilitar eventos Scrum, remover impedimentos e coaching da equipe",
     isCore: true
   },
   {
     id: 2,
-    name: "Node.js",
-    category: "Backend",
-    level: "Intermediário",
-    description: "Runtime JavaScript para desenvolvimento backend"
-  },
-  {
-    id: 3,
-    name: "Figma",
-    category: "Design",
+    name: "Product Owner",
+    category: "Scrum",
     level: "Avançado",
-    description: "Ferramenta de design colaborativo",
+    description: "Gerenciar backlog do produto e definir prioridades de negócio",
     isCore: true
   },
   {
+    id: 3,
+    name: "Sprint Planning",
+    category: "Eventos Scrum",
+    level: "Intermediário",
+    description: "Planejar e estimar trabalho para a Sprint"
+  },
+  {
     id: 4,
-    name: "Scrum",
-    category: "Metodologia",
-    level: "Expert",
-    description: "Framework ágil para gestão de projetos"
+    name: "Daily Scrum",
+    category: "Eventos Scrum",
+    level: "Básico",
+    description: "Facilitar e participar de reuniões diárias"
+  },
+  {
+    id: 5,
+    name: "Sprint Review",
+    category: "Eventos Scrum",
+    level: "Intermediário",
+    description: "Demonstrar incremento e coletar feedback"
+  },
+  {
+    id: 6,
+    name: "Sprint Retrospective",
+    category: "Eventos Scrum",
+    level: "Avançado",
+    description: "Facilitar melhorias contínuas da equipe"
+  },
+  {
+    id: 7,
+    name: "Product Backlog Management",
+    category: "Artefatos Scrum",
+    level: "Avançado",
+    description: "Criar, priorizar e refinar itens do backlog"
+  },
+  {
+    id: 8,
+    name: "User Stories",
+    category: "Artefatos Scrum",
+    level: "Intermediário",
+    description: "Escrever e decompor histórias de usuário"
+  },
+  {
+    id: 9,
+    name: "Definition of Done",
+    category: "Artefatos Scrum",
+    level: "Básico",
+    description: "Definir e aplicar critérios de pronto"
+  },
+  {
+    id: 10,
+    name: "Velocity Tracking",
+    category: "Métricas Ágeis",
+    level: "Intermediário",
+    description: "Medir e acompanhar velocidade da equipe"
+  },
+  {
+    id: 11,
+    name: "Burndown Charts",
+    category: "Métricas Ágeis",
+    level: "Básico",
+    description: "Criar e interpretar gráficos de burndown"
+  },
+  {
+    id: 12,
+    name: "Stakeholder Management",
+    category: "Soft Skills Ágeis",
+    level: "Avançado",
+    description: "Gerenciar expectativas e comunicação com stakeholders"
   }
 ];
 
@@ -108,9 +164,9 @@ const SkillManagement: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Competências</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Competências Scrum</h1>
           <p className="text-muted-foreground">
-            Cadastre e gerencie todas as competências disponíveis na organização.
+            Gerencie competências relacionadas à metodologia Scrum e práticas ágeis.
           </p>
         </div>
         
@@ -143,7 +199,7 @@ const SkillManagement: React.FC = () => {
         <div className="flex items-center space-x-2 flex-1">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar competências..."
+            placeholder="Buscar competências Scrum..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
