@@ -1,357 +1,286 @@
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Lightbulb, Target, AlertCircle, Star } from "lucide-react";
-import { TeamOptimizer } from "@/utils/teamOptimizer";
-import { Employee } from "@/components/employees/EmployeeCard";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Users, User, Plus, X } from 'lucide-react';
 
-interface TeamMember {
+interface Employee {
   id: number;
   name: string;
   role: string;
-  primarySkill?: string;
-  avatar: string | null;
   skills: string[];
+  level: string;
+  availability: 'Disponível' | 'Ocupado' | 'Férias';
 }
 
 interface Team {
   id: number;
   name: string;
   project: string;
-  status: "Ativo" | "Inativo" | "Planejado";
-  members: TeamMember[];
+  members: Employee[];
   maxMembers: number;
-  description?: string;
-  requiredSkills?: string[];
 }
 
-interface DragDropTeamManagerProps {
-  teams: any[];
-  availableMembers: Employee[];
-  onTeamUpdate: (teams: any[]) => void;
-}
+const mockEmployees: Employee[] = [
+  {
+    id: 1,
+    name: "Ana Silva",
+    role: "Scrum Master",
+    skills: ["Scrum Master", "Sprint Planning", "Daily Scrum"],
+    level: "Sênior",
+    availability: "Disponível"
+  },
+  {
+    id: 2,
+    name: "Carlos Santos",
+    role: "Product Owner",
+    skills: ["Product Owner", "Product Backlog Management", "User Stories"],
+    level: "Pleno",
+    availability: "Disponível"
+  },
+  {
+    id: 3,
+    name: "Maria Costa",
+    role: "Developer",
+    skills: ["Sprint Planning", "Definition of Done", "Velocity Tracking"],
+    level: "Sênior",
+    availability: "Disponível"
+  },
+  {
+    id: 4,
+    name: "João Oliveira",
+    role: "Developer",
+    skills: ["Daily Scrum", "Sprint Review", "Burndown Charts"],
+    level: "Júnior",
+    availability: "Ocupado"
+  },
+];
 
-const DragDropTeamManager: React.FC<DragDropTeamManagerProps> = ({
-  teams,
-  availableMembers,
-  onTeamUpdate,
-}) => {
-  const [draggedMember, setDraggedMember] = useState<Employee | null>(null);
-  const [optimizationResults, setOptimizationResults] = useState<any[]>([]);
+const initialTeams: Team[] = [
+  {
+    id: 1,
+    name: "Team Alpha",
+    project: "E-commerce Platform",
+    members: [],
+    maxMembers: 5
+  },
+  {
+    id: 2,
+    name: "Team Beta",
+    project: "Mobile App",
+    members: [],
+    maxMembers: 4
+  },
+];
 
-  const handleDragStart = (member: Employee) => {
-    setDraggedMember(member);
+const DragDropTeamManager: React.FC = () => {
+  const [employees] = useState<Employee[]>(mockEmployees);
+  const [teams, setTeams] = useState<Team[]>(initialTeams);
+  const [draggedEmployee, setDraggedEmployee] = useState<Employee | null>(null);
+  const [dragOverTeam, setDragOverTeam] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, employee: Employee) => {
+    setDraggedEmployee(employee);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, teamId: number) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverTeam(teamId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverTeam(null);
   };
 
   const handleDrop = (e: React.DragEvent, teamId: number) => {
     e.preventDefault();
-    if (!draggedMember) return;
+    setDragOverTeam(null);
+    
+    if (!draggedEmployee) return;
 
-    const updatedTeams = teams.map(team => {
-      if (team.id === teamId && team.members.length < team.maxMembers) {
-        const newMember: TeamMember = {
-          id: draggedMember.id,
-          name: draggedMember.name,
-          role: draggedMember.role,
-          primarySkill: draggedMember.primarySkill,
-          avatar: draggedMember.avatar,
-          skills: draggedMember.skills || []
-        };
-        return {
-          ...team,
-          members: [...team.members, newMember]
-        };
-      }
-      return team;
-    });
+    const targetTeam = teams.find(team => team.id === teamId);
+    if (!targetTeam) return;
 
-    onTeamUpdate(updatedTeams);
-    setDraggedMember(null);
-  };
+    if (targetTeam.members.length >= targetTeam.maxMembers) {
+      alert('Esta equipe já atingiu o número máximo de membros!');
+      return;
+    }
 
-  const handleRemoveMember = (teamId: number, memberId: number) => {
-    const updatedTeams = teams.map(team => {
-      if (team.id === teamId) {
-        return {
-          ...team,
-          members: team.members.filter((member: TeamMember) => member.id !== memberId)
-        };
-      }
-      return team;
-    });
+    if (targetTeam.members.find(member => member.id === draggedEmployee.id)) {
+      alert('Este colaborador já está nesta equipe!');
+      return;
+    }
 
-    onTeamUpdate(updatedTeams);
-  };
-
-  const handleOptimizeTeams = () => {
-    const convertedTeams: Team[] = teams.map(team => ({
-      ...team,
-      members: team.members.map((member: any) => ({
-        ...member,
-        skills: member.skills || []
-      }))
-    }));
-
-    const results = TeamOptimizer.suggestOptimalDistribution(
-      convertedTeams,
-      availableMembers
+    setTeams(prevTeams => 
+      prevTeams.map(team => 
+        team.id === teamId 
+          ? { ...team, members: [...team.members, draggedEmployee] }
+          : { ...team, members: team.members.filter(member => member.id !== draggedEmployee.id) }
+      )
     );
-    setOptimizationResults(results);
+
+    setDraggedEmployee(null);
   };
 
-  const applySuggestion = (teamId: number, suggestion: Employee) => {
-    const updatedTeams = teams.map(team => {
-      if (team.id === teamId && team.members.length < team.maxMembers) {
-        const newMember: TeamMember = {
-          id: suggestion.id,
-          name: suggestion.name,
-          role: suggestion.role,
-          primarySkill: suggestion.primarySkill,
-          avatar: suggestion.avatar,
-          skills: suggestion.skills || []
-        };
-        return {
-          ...team,
-          members: [...team.members, newMember]
-        };
-      }
-      return team;
-    });
-
-    onTeamUpdate(updatedTeams);
+  const handleRemoveMember = (teamId: number, employeeId: number) => {
+    setTeams(prevTeams =>
+      prevTeams.map(team =>
+        team.id === teamId
+          ? { ...team, members: team.members.filter(member => member.id !== employeeId) }
+          : team
+      )
+    );
   };
 
-  const availableMembersFiltered = availableMembers.filter(member => 
-    !teams.some(team => 
-      team.members.some((teamMember: TeamMember) => teamMember.id === member.id)
-    )
+  const availableEmployees = employees.filter(employee => 
+    !teams.some(team => team.members.find(member => member.id === employee.id))
   );
 
+  const getAvailabilityColor = (availability: string) => {
+    switch (availability) {
+      case 'Disponível': return 'bg-green-100 text-green-800';
+      case 'Ocupado': return 'bg-red-100 text-red-800';
+      case 'Férias': return 'bg-yellow-100 text-yellow-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Organização de Equipes</h2>
-          <p className="text-muted-foreground">
-            Arraste colaboradores para as equipes ou use a otimização automática
-          </p>
-        </div>
-        <Button onClick={handleOptimizeTeams} className="gap-2">
-          <Lightbulb className="h-4 w-4" />
-          Otimizar Equipes
-        </Button>
+    <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold mb-2">Organização de Equipes</h2>
+        <p className="text-muted-foreground">
+          Arraste os colaboradores para as equipes desejadas
+        </p>
       </div>
 
-      <Tabs defaultValue="organize" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="organize">Organizar</TabsTrigger>
-          <TabsTrigger value="suggestions">Sugestões de Otimização</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Colaboradores Disponíveis */}
+        <div className="xl:col-span-1">
+          <Card className="h-fit">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Colaboradores Disponíveis ({availableEmployees.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {availableEmployees.map((employee) => (
+                <div
+                  key={employee.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, employee)}
+                  className="p-3 border rounded-lg cursor-move hover:bg-muted/50 transition-colors bg-white"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h4 className="font-medium text-sm">{employee.name}</h4>
+                      <p className="text-xs text-muted-foreground">{employee.role}</p>
+                    </div>
+                    <Badge className={`text-xs ${getAvailabilityColor(employee.availability)}`}>
+                      {employee.availability}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {employee.skills.slice(0, 2).map((skill, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                    {employee.skills.length > 2 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{employee.skills.length - 2}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {availableEmployees.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Todos os colaboradores foram alocados</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-        <TabsContent value="organize" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Available Members */}
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Colaboradores Disponíveis
+        {/* Equipes */}
+        <div className="xl:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {teams.map((team) => (
+              <Card
+                key={team.id}
+                className={`transition-all duration-200 ${
+                  dragOverTeam === team.id 
+                    ? 'ring-2 ring-primary bg-primary/5 scale-[1.02]' 
+                    : 'hover:shadow-md'
+                }`}
+                onDragOver={(e) => handleDragOver(e, team.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, team.id)}
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-primary rounded-full"></div>
+                      <span className="text-lg">{team.name}</span>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                      {team.members.length}/{team.maxMembers}
+                    </Badge>
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground">{team.project}</p>
                 </CardHeader>
+                
                 <CardContent className="space-y-3">
-                  {availableMembersFiltered.map(member => (
+                  {team.members.map((member) => (
                     <div
                       key={member.id}
-                      draggable
-                      onDragStart={() => handleDragStart(member)}
-                      className="flex items-center space-x-3 p-3 bg-muted/30 rounded-md cursor-move hover:bg-muted/50 transition-colors"
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                     >
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={member.avatar || ""} alt={member.name} />
-                        <AvatarFallback className="text-xs">
-                          {member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.role}</p>
-                        {member.primarySkill && (
-                          <Badge variant="secondary" className="text-xs mt-1">
-                            {member.primarySkill}
-                          </Badge>
-                        )}
+                      <div className="flex items-center gap-3">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-sm">{member.name}</p>
+                          <p className="text-xs text-muted-foreground">{member.role}</p>
+                        </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveMember(team.id, member.id)}
+                        className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   ))}
+                  
+                  {team.members.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-muted-foreground border-2 border-dashed border-muted rounded-lg">
+                      <Plus className="h-8 w-8 mb-2 opacity-50" />
+                      <p className="text-sm">Arraste colaboradores aqui</p>
+                    </div>
+                  )}
+                  
+                  {dragOverTeam === team.id && (
+                    <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg flex items-center justify-center pointer-events-none">
+                      <div className="bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm font-medium">
+                        Solte aqui para adicionar à equipe
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            </div>
-
-            {/* Teams */}
-            <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {teams.map(team => (
-                <Card
-                  key={team.id}
-                  className="min-h-[400px]"
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, team.id)}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-lg">{team.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{team.project}</p>
-                    <div className="flex justify-between items-center">
-                      <Badge variant={team.status === "Ativo" ? "default" : "outline"}>
-                        {team.status}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {team.members.length}/{team.maxMembers}
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {team.members.map((member: TeamMember) => (
-                      <div
-                        key={member.id}
-                        className="flex items-center justify-between p-2 bg-muted/30 rounded-md"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={member.avatar || ""} alt={member.name} />
-                            <AvatarFallback className="text-xs">
-                              {member.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{member.name}</p>
-                            <p className="text-xs text-muted-foreground">{member.role}</p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveMember(team.id, member.id)}
-                        >
-                          ×
-                        </Button>
-                      </div>
-                    ))}
-                    
-                    {team.members.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-muted rounded-lg">
-                        <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">Arraste colaboradores aqui</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            ))}
           </div>
-        </TabsContent>
-
-        <TabsContent value="suggestions" className="space-y-6">
-          {optimizationResults.length > 0 ? (
-            <div className="grid gap-6">
-              {optimizationResults.map((result, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          <Target className="h-5 w-5" />
-                          {result.team.name}
-                        </CardTitle>
-                        <p className="text-muted-foreground">{result.team.project}</p>
-                      </div>
-                      <Badge variant="outline">
-                        Score: {(result.score * 100).toFixed(0)}%
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {result.suggestions.length > 0 ? (
-                      <>
-                        <div>
-                          <h4 className="font-medium mb-2">Membros Sugeridos:</h4>
-                          <div className="space-y-2">
-                            {result.suggestions.map((suggestion: Employee) => (
-                              <div
-                                key={suggestion.id}
-                                className="flex items-center justify-between p-3 bg-muted/30 rounded-md"
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <Avatar className="h-8 w-8">
-                                    <AvatarImage src={suggestion.avatar || ""} alt={suggestion.name} />
-                                    <AvatarFallback className="text-xs">
-                                      {suggestion.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <p className="text-sm font-medium">{suggestion.name}</p>
-                                    <p className="text-xs text-muted-foreground">{suggestion.role}</p>
-                                  </div>
-                                  {suggestion.primarySkill && (
-                                    <div className="flex items-center gap-1">
-                                      <Star className="h-3 w-3 text-amber-500" />
-                                      <Badge variant="secondary" className="text-xs">
-                                        {suggestion.primarySkill}
-                                      </Badge>
-                                    </div>
-                                  )}
-                                </div>
-                                <Button
-                                  size="sm"
-                                  onClick={() => applySuggestion(result.team.id, suggestion)}
-                                >
-                                  Adicionar
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-medium mb-2">Justificativa:</h4>
-                          <ul className="space-y-1 text-sm text-muted-foreground">
-                            {result.reasoning.map((reason: string, idx: number) => (
-                              <li key={idx} className="flex items-start gap-2">
-                                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                                {reason}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </>
-                    ) : (
-                      <p className="text-muted-foreground text-center py-4">
-                        Equipe já está otimizada ou não há membros disponíveis
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Lightbulb className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  Clique em "Otimizar Equipes" para ver sugestões de alocação
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
