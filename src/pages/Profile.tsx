@@ -2,6 +2,7 @@
 import React from "react";
 import ProfileForm from "@/components/profile/ProfileForm";
 import SecuritySettings from "@/components/profile/SecuritySettings";
+import SkillsSection from "@/components/profile/SkillsSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Profile: React.FC = () => {
@@ -10,18 +11,23 @@ const Profile: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold tracking-tight mb-2">Meu Perfil</h1>
         <p className="text-muted-foreground">
-          Gerencie suas informações pessoais e configurações de conta.
+          Gerencie suas informações pessoais, competências e configurações de conta.
         </p>
       </div>
       
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="skills">Competências</TabsTrigger>
           <TabsTrigger value="security">Segurança</TabsTrigger>
         </TabsList>
         
         <TabsContent value="profile">
           <ProfileForm />
+        </TabsContent>
+        
+        <TabsContent value="skills">
+          <SkillsSection />
         </TabsContent>
         
         <TabsContent value="security">
