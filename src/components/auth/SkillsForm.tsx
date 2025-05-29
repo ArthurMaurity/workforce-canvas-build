@@ -34,13 +34,14 @@ interface UserSkill {
   skill: string;
   level: "Básico" | "Intermediário" | "Avançado" | "Expert";
   type: "soft" | "hard";
+  role: "Scrum Master" | "Product Owner" | "Desenvolvedor";
 }
 
 const scrumSkills = {
   soft: {
     "Scrum Master": [
       "Comunicação clara",
-      "Facilitação",
+      "Facilitação", 
       "Remoção de impedimentos",
       "Autoconfiança",
       "Gestão de tempo",
@@ -54,7 +55,7 @@ const scrumSkills = {
       "Priorização",
       "Comunicação eficaz",
       "Autonomia",
-      "Disponibilidade",
+      "Disponibilidade", 
       "Análise de métricas",
       "Resiliência",
       "Pensamento Ágil",
@@ -74,18 +75,18 @@ const scrumSkills = {
   hard: {
     "Scrum Master": [
       "Conhecimento avançado do framework Scrum",
-      "Domínio de ferramentas ágeis (Jira, Trello, Azure DevOps)",
-      "Métricas ágeis (velocidade da equipe, burndown charts)"
+      "Domínio de ferramentas ágeis",
+      "Métricas ágeis"
     ],
     "Product Owner": [
-      "Gestão de backlog (user stories, épicos, refinamento)",
-      "Técnicas de priorização (MoSCoW, Value vs. Effort)",
+      "Gestão de backlog",
+      "Domínio de técnicas de priorização",
       "Conhecimento em UX/UI"
     ],
     "Desenvolvedor": [
-      "Stack técnico relevante (Java, Python, React, SQL)",
-      "Versionamento de código (Git, GitFlow)",
-      "Testes automatizados (TDD, BDD, Selenium/JUnit)"
+      "Stack técnico relevante",
+      "Versionamento de código",
+      "Testes automatizados"
     ]
   }
 };
@@ -112,24 +113,29 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ onSkillsChange }) => {
     : [];
 
   const filteredSkills = availableSkills.filter(skill => 
-    !userSkills.some(userSkill => userSkill.skill === skill)
+    !userSkills.some(userSkill => userSkill.skill === skill && userSkill.role === selectedRole)
   );
 
   const handleAddSkill = (data: SkillFormValues) => {
+    if (!selectedRole) return;
+    
     const newSkill: UserSkill = {
       skill: data.skill,
       level: data.level,
-      type: selectedType
+      type: selectedType,
+      role: selectedRole as "Scrum Master" | "Product Owner" | "Desenvolvedor"
     };
     
     const updatedSkills = [...userSkills, newSkill];
     setUserSkills(updatedSkills);
     onSkillsChange(updatedSkills);
-    form.reset();
+    form.reset({ skill: "", level: "Básico" });
   };
 
-  const handleRemoveSkill = (skillToRemove: string) => {
-    const updatedSkills = userSkills.filter(skill => skill.skill !== skillToRemove);
+  const handleRemoveSkill = (skillToRemove: string, roleToRemove: string) => {
+    const updatedSkills = userSkills.filter(skill => 
+      !(skill.skill === skillToRemove && skill.role === roleToRemove)
+    );
     setUserSkills(updatedSkills);
     onSkillsChange(updatedSkills);
   };
@@ -149,7 +155,7 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ onSkillsChange }) => {
       <CardHeader>
         <CardTitle>Competências Scrum</CardTitle>
         <CardDescription>
-          Adicione suas competências relacionadas à metodologia Scrum
+          Adicione suas competências relacionadas à metodologia Scrum para cada papel
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -248,28 +254,41 @@ const SkillsForm: React.FC<SkillsFormProps> = ({ onSkillsChange }) => {
 
         <div className="space-y-3">
           <h4 className="text-sm font-medium">Competências Adicionadas ({userSkills.length})</h4>
-          <div className="flex flex-wrap gap-2">
-            {userSkills.map((skill, index) => (
-              <Badge
-                key={index}
-                variant={getLevelColor(skill.level)}
-                className="flex items-center gap-1 px-3 py-1"
-              >
-                {skill.skill} ({skill.level})
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={() => handleRemoveSkill(skill.skill)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </Badge>
-            ))}
-            {userSkills.length === 0 && (
-              <p className="text-sm text-muted-foreground">Nenhuma competência adicionada</p>
-            )}
-          </div>
+          
+          {["Scrum Master", "Product Owner", "Desenvolvedor"].map(role => {
+            const roleSkills = userSkills.filter(skill => skill.role === role);
+            if (roleSkills.length === 0) return null;
+            
+            return (
+              <div key={role} className="space-y-2">
+                <h5 className="text-sm font-medium text-muted-foreground">{role}</h5>
+                <div className="flex flex-wrap gap-2">
+                  {roleSkills.map((skill, index) => (
+                    <Badge
+                      key={index}
+                      variant={getLevelColor(skill.level)}
+                      className="flex items-center gap-1 px-3 py-1"
+                    >
+                      <span className="text-xs">{skill.type === "soft" ? "S" : "H"}</span>
+                      {skill.skill} ({skill.level})
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-4 w-4 p-0 hover:bg-transparent"
+                        onClick={() => handleRemoveSkill(skill.skill, skill.role)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          
+          {userSkills.length === 0 && (
+            <p className="text-sm text-muted-foreground">Nenhuma competência adicionada</p>
+          )}
         </div>
       </CardContent>
     </Card>

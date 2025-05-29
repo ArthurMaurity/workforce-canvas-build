@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Users, Target } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Plus, Users, Target, Wand2 } from "lucide-react";
 import DragDropTeamManager from "@/components/teams/DragDropTeamManager";
 import TeamForm from "@/components/teams/TeamForm";
+import AutoTeamGenerator from "@/components/teams/AutoTeamGenerator";
 
 export interface Team {
   id: number;
@@ -89,7 +91,7 @@ const TeamManagement: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Times</h1>
           <p className="text-muted-foreground">
-            Crie, edite e gerencie seus times de projeto.
+            Crie, edite e gerencie seus times de projeto ou use o gerador automático.
           </p>
         </div>
 
@@ -117,69 +119,83 @@ const TeamManagement: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
-      
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex items-center space-x-2 flex-1">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar times..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
-          />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredTeams.map((team) => (
-          <Card key={team.id} className="overflow-hidden hover:shadow-md transition-shadow">
-            <CardHeader className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <CardTitle className="text-lg">{team.name}</CardTitle>
-              </div>
-              <div className="flex space-x-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => openEditForm(team)}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteTeam(team.id)}
-                >
-                  Excluir
-                </Button>
-              </div>
+      <Tabs defaultValue="manual" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="manual">Gestão Manual</TabsTrigger>
+          <TabsTrigger value="auto">Gerador Automático</TabsTrigger>
+          <TabsTrigger value="optimization">Otimização</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="manual" className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex items-center space-x-2 flex-1">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar times..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {filteredTeams.map((team) => (
+              <Card key={team.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                <CardHeader className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    <CardTitle className="text-lg">{team.name}</CardTitle>
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openEditForm(team)}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteTeam(team.id)}
+                    >
+                      Excluir
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-1">
+                  <p className="text-sm text-muted-foreground">{team.description}</p>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {team.skills.map((skill, index) => (
+                      <Badge key={index} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="auto" className="space-y-4">
+          <AutoTeamGenerator />
+        </TabsContent>
+
+        <TabsContent value="optimization" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Otimização de Times
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1">
-              <p className="text-sm text-muted-foreground">{team.description}</p>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {team.skills.map((skill, index) => (
-                  <Badge key={index} variant="secondary">{skill}</Badge>
-                ))}
-              </div>
+            <CardContent>
+              <DragDropTeamManager />
             </CardContent>
           </Card>
-        ))}
-      </div>
-
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              Otimização de Times
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DragDropTeamManager />
-          </CardContent>
-        </Card>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
