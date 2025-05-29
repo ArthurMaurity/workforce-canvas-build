@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,8 +16,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { GoogleLogo } from "@/components/ui/icons";
+import SkillsForm from "./SkillsForm";
 
 const registerSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -26,7 +25,6 @@ const registerSchema = z.object({
     .string()
     .email("Digite um email válido")
     .refine((email) => {
-      // Email corporativo geralmente termina com @empresa.com ou similar
       return email.includes("@") && !email.endsWith("@gmail.com") && 
              !email.endsWith("@hotmail.com") && !email.endsWith("@outlook.com");
     }, "Por favor, use seu email corporativo"),
@@ -45,8 +43,16 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+interface UserSkill {
+  skill: string;
+  level: "Básico" | "Intermediário" | "Avançado" | "Expert";
+  type: "soft" | "hard";
+}
+
 const RegisterForm: React.FC = () => {
   const { toast } = useToast();
+  const [step, setStep] = useState(1);
+  const [userSkills, setUserSkills] = useState<UserSkill[]>([]);
   
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -61,17 +67,14 @@ const RegisterForm: React.FC = () => {
   });
 
   function onSubmit(data: RegisterFormValues) {
-    // Simulando uma chamada de API
-    console.log("Registration data:", data);
+    console.log("Registration data:", { ...data, skills: userSkills });
     
-    // Exemplo de tratamento de registro - em produção, isso seria substituído pela integração real com a API
     setTimeout(() => {
       toast({
         title: "Conta criada com sucesso!",
         description: "Você já pode fazer login no sistema.",
       });
       
-      // Em uma implementação real, redirecionaria para o login após registro bem-sucedido
       window.location.href = "/login";
     }, 1000);
   }
@@ -82,14 +85,45 @@ const RegisterForm: React.FC = () => {
       description: "Redirecionando para autenticação do Google...",
     });
     
-    // Em uma implementação real, iniciaria o fluxo de autenticação OAuth com Google
     console.log("Google signup initiated");
     
-    // Simulando redirecionamento para o dashboard após cadastro com Google
     setTimeout(() => {
       window.location.href = "/dashboard";
     }, 1500);
   };
+
+  const handleNextStep = () => {
+    form.trigger().then((isValid) => {
+      if (isValid) {
+        setStep(2);
+      }
+    });
+  };
+
+  if (step === 2) {
+    return (
+      <Card className="w-full max-w-2xl">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Suas Competências Scrum</CardTitle>
+          <CardDescription>
+            Adicione suas competências para melhor matching com projetos
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SkillsForm onSkillsChange={setUserSkills} />
+          
+          <div className="flex justify-between mt-6">
+            <Button variant="outline" onClick={() => setStep(1)}>
+              Voltar
+            </Button>
+            <Button onClick={() => onSubmit(form.getValues())}>
+              Finalizar Cadastro
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md">
@@ -123,7 +157,7 @@ const RegisterForm: React.FC = () => {
           </div>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(handleNextStep)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -230,7 +264,7 @@ const RegisterForm: React.FC = () => {
               />
               
               <Button type="submit" className="w-full">
-                Cadastrar
+                Próximo: Competências
               </Button>
             </form>
           </Form>

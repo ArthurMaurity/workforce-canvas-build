@@ -1,208 +1,185 @@
-
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, UserPlus, Sparkles, Shuffle } from "lucide-react";
+import { Search, Plus, Users, Target } from "lucide-react";
 import DragDropTeamManager from "@/components/teams/DragDropTeamManager";
-import { optimizeTeams } from "@/utils/teamOptimizer";
+import TeamForm from "@/components/teams/TeamForm";
 
-interface Employee {
+export interface Team {
   id: number;
   name: string;
-  role: string;
+  description: string;
+  members: string[];
   skills: string[];
-  level: string;
-  availability: 'Disponível' | 'Ocupado' | 'Férias';
 }
 
-interface Team {
-  id: number;
-  name: string;
-  project: string;
-  members: Employee[];
-  maxMembers: number;
-}
-
-const mockEmployees: Employee[] = [
+const mockTeams: Team[] = [
   {
     id: 1,
-    name: "Ana Silva",
-    role: "Scrum Master",
-    skills: ["Facilitação", "Comunicação clara", "Conhecimento avançado do framework Scrum"],
-    level: "Sênior",
-    availability: "Disponível"
+    name: "Time Ágil Alpha",
+    description: "Focado em desenvolvimento de novos produtos",
+    members: ["João", "Maria", "Carlos"],
+    skills: ["React", "Node.js", "Scrum"]
   },
   {
     id: 2,
-    name: "Carlos Santos",
-    role: "Product Owner",
-    skills: ["Visão estratégica do negócio", "Gestão de backlog", "Priorização"],
-    level: "Pleno",
-    availability: "Disponível"
+    name: "Time Inovação Beta",
+    description: "Especializado em soluções de IA",
+    members: ["Ana", "Pedro", "Lucas"],
+    skills: ["Python", "TensorFlow", "Agile"]
   },
   {
     id: 3,
-    name: "Maria Costa",
-    role: "Desenvolvedor",
-    skills: ["Stack técnico relevante", "Auto-organização", "Versionamento de código"],
-    level: "Sênior",
-    availability: "Disponível"
-  },
-  {
-    id: 4,
-    name: "João Oliveira",
-    role: "Desenvolvedor",
-    skills: ["Testes automatizados", "Colaboração", "Multidisciplinaridade"],
-    level: "Júnior",
-    availability: "Ocupado"
-  },
-];
-
-const initialTeams: Team[] = [
-  {
-    id: 1,
-    name: "Team Alpha",
-    project: "E-commerce Platform",
-    members: [],
-    maxMembers: 5
-  },
-  {
-    id: 2,
-    name: "Team Beta",
-    project: "Mobile App",
-    members: [],
-    maxMembers: 4
-  },
+    name: "Time de Dados Gama",
+    description: "Análise e visualização de dados",
+    members: ["Sofia", "Miguel", "Juliana"],
+    skills: ["SQL", "Tableau", "Data Mining"]
+  }
 ];
 
 const TeamManagement: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>(initialTeams);
-  const [employees] = useState<Employee[]>(mockEmployees);
+  const [teams, setTeams] = useState<Team[]>(mockTeams);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
-  const availableMembers = employees.filter(employee => 
-    !teams.some(team => team.members.find(member => member.id === employee.id))
+  const filteredTeams = teams.filter(team =>
+    team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    team.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    team.members.some(member => member.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    team.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleOptimizeTeams = () => {
-    const optimizedTeams = optimizeTeams(teams, availableMembers);
-    setTeams(optimizedTeams);
+  const handleCreateTeam = (data: Omit<Team, 'id'>) => {
+    const newTeam: Team = {
+      id: teams.length + 1,
+      ...data,
+      members: [],
+      skills: []
+    };
+    setTeams([...teams, newTeam]);
+    setIsFormOpen(false);
   };
 
-  const teamStats = {
-    totalTeams: teams.length,
-    totalMembers: teams.reduce((acc, team) => acc + team.members.length, 0),
-    availableMembers: availableMembers.length,
-    averageTeamSize: teams.length > 0 ? Math.round(teams.reduce((acc, team) => acc + team.members.length, 0) / teams.length) : 0
+  const handleEditTeam = (data: Omit<Team, 'id'>) => {
+    if (editingTeam) {
+      setTeams(teams.map(team =>
+        team.id === editingTeam.id ? { ...team, ...data } : team
+      ));
+      setEditingTeam(null);
+      setIsFormOpen(false);
+    }
+  };
+
+  const handleDeleteTeam = (id: number) => {
+    setTeams(teams.filter(team => team.id !== id));
+  };
+
+  const openEditForm = (team: Team) => {
+    setEditingTeam(team);
+    setIsFormOpen(true);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestão de Equipes</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Times</h1>
           <p className="text-muted-foreground">
-            Organize equipes ágeis com base nas competências Scrum dos colaboradores.
+            Crie, edite e gerencie seus times de projeto.
           </p>
         </div>
-        
-        <Button onClick={handleOptimizeTeams} className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4" />
-          Otimizar Equipes
-        </Button>
+
+        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setEditingTeam(null)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Novo Time
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingTeam ? "Editar Time" : "Novo Time"}
+              </DialogTitle>
+            </DialogHeader>
+            <TeamForm
+              initialData={editingTeam || undefined}
+              onSubmit={editingTeam ? handleEditTeam : handleCreateTeam}
+              onCancel={() => {
+                setIsFormOpen(false);
+                setEditingTeam(null);
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+      
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex items-center space-x-2 flex-1">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar times..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
+        </div>
       </div>
 
-      {/* Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Equipes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{teamStats.totalTeams}</div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {filteredTeams.map((team) => (
+          <Card key={team.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <CardHeader className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                <CardTitle className="text-lg">{team.name}</CardTitle>
+              </div>
+              <div className="flex space-x-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openEditForm(team)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteTeam(team.id)}
+                >
+                  Excluir
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              <p className="text-sm text-muted-foreground">{team.description}</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {team.skills.map((skill, index) => (
+                  <Badge key={index} variant="secondary">{skill}</Badge>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
+      <div className="mt-8">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Membros Alocados</CardTitle>
-            <UserPlus className="h-4 w-4 text-muted-foreground" />
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              Otimização de Times
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamStats.totalMembers}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Disponíveis</CardTitle>
-            <Shuffle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{teamStats.availableMembers}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tamanho Médio</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{teamStats.averageTeamSize}</div>
+            <DragDropTeamManager />
           </CardContent>
         </Card>
       </div>
-
-      <Tabs defaultValue="organize" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="organize">Organizar Equipes</TabsTrigger>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="organize">
-          <DragDropTeamManager />
-        </TabsContent>
-        
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {teams.map((team) => (
-              <Card key={team.id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    {team.name}
-                    <Badge variant="secondary">
-                      {team.members.length}/{team.maxMembers}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>{team.project}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {team.members.length > 0 ? (
-                      team.members.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-2 bg-muted rounded">
-                          <div>
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-sm text-muted-foreground">{member.role}</p>
-                          </div>
-                          <Badge variant="outline">{member.level}</Badge>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        Nenhum membro alocado
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };
