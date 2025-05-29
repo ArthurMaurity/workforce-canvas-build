@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SkillsSetup from "./pages/SkillsSetup";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Collaborators from "./pages/Collaborators";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/skills-setup" element={<SkillsSetup />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           
           {/* Protected Routes (Dashboard) */}

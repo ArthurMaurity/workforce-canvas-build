@@ -1,4 +1,3 @@
-
 import React from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -43,13 +42,12 @@ interface SkillFormProps {
 }
 
 const scrumCategories = [
-  "Scrum", 
-  "Eventos Scrum", 
-  "Artefatos Scrum", 
-  "Métricas Ágeis", 
-  "Soft Skills Ágeis",
-  "Ferramentas Ágeis",
-  "Coaching Ágil"
+  "Scrum Master - Soft Skills",
+  "Scrum Master - Hard Skills", 
+  "Product Owner - Soft Skills",
+  "Product Owner - Hard Skills",
+  "Desenvolvedores - Soft Skills",
+  "Desenvolvedores - Hard Skills"
 ];
 
 const SkillForm: React.FC<SkillFormProps> = ({
@@ -92,7 +90,7 @@ const SkillForm: React.FC<SkillFormProps> = ({
               <FormItem>
                 <FormLabel>Nome da Competência</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: Scrum Master, Product Owner..." {...field} />
+                  <Input placeholder="Ex: Comunicação clara, Facilitação..." {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,91 +17,226 @@ export interface Skill {
 }
 
 const mockSkills: Skill[] = [
+  // Scrum Master - Soft Skills
   {
     id: 1,
-    name: "Scrum Master",
-    category: "Scrum",
+    name: "Comunicação clara",
+    category: "Scrum Master - Soft Skills",
     level: "Expert",
-    description: "Facilitar eventos Scrum, remover impedimentos e coaching da equipe",
+    description: "Para facilitar entendimento do framework pela equipe",
     isCore: true
   },
   {
     id: 2,
-    name: "Product Owner",
-    category: "Scrum",
+    name: "Facilitação",
+    category: "Scrum Master - Soft Skills",
     level: "Avançado",
-    description: "Gerenciar backlog do produto e definir prioridades de negócio",
-    isCore: true
+    description: "Garantir que eventos Scrum ocorram de forma produtiva e dentro do timebox"
   },
   {
     id: 3,
-    name: "Sprint Planning",
-    category: "Eventos Scrum",
-    level: "Intermediário",
-    description: "Planejar e estimar trabalho para a Sprint"
+    name: "Remoção de impedimentos",
+    category: "Scrum Master - Soft Skills",
+    level: "Avançado",
+    description: "Identificar e resolver obstáculos que afetam a equipe"
   },
   {
     id: 4,
-    name: "Daily Scrum",
-    category: "Eventos Scrum",
-    level: "Básico",
-    description: "Facilitar e participar de reuniões diárias"
+    name: "Autoconfiança",
+    category: "Scrum Master - Soft Skills",
+    level: "Intermediário",
+    description: "Liderar sem autoridade hierárquica, inspirando colaboração"
   },
   {
     id: 5,
-    name: "Sprint Review",
-    category: "Eventos Scrum",
-    level: "Intermediário",
-    description: "Demonstrar incremento e coletar feedback"
+    name: "Gestão de tempo",
+    category: "Scrum Master - Soft Skills",
+    level: "Avançado",
+    description: "Aplicar timeboxing (fixo ou flexível) em cerimônias"
   },
   {
     id: 6,
-    name: "Sprint Retrospective",
-    category: "Eventos Scrum",
-    level: "Avançado",
-    description: "Facilitar melhorias contínuas da equipe"
+    name: "Promoção da auto-organização",
+    category: "Scrum Master - Soft Skills",
+    level: "Expert",
+    description: "Incentivar a autonomia da equipe"
   },
   {
     id: 7,
-    name: "Product Backlog Management",
-    category: "Artefatos Scrum",
-    level: "Avançado",
-    description: "Criar, priorizar e refinar itens do backlog"
+    name: "Resiliência",
+    category: "Scrum Master - Soft Skills",
+    level: "Intermediário",
+    description: "Lidar com mudanças e feedbacks constantes"
   },
   {
     id: 8,
-    name: "User Stories",
-    category: "Artefatos Scrum",
-    level: "Intermediário",
-    description: "Escrever e decompor histórias de usuário"
+    name: "Pensamento Ágil",
+    category: "Scrum Master - Soft Skills",
+    level: "Avançado",
+    description: "Foco em entregas incrementais e aprendizado"
   },
   {
     id: 9,
-    name: "Definition of Done",
-    category: "Artefatos Scrum",
-    level: "Básico",
-    description: "Definir e aplicar critérios de pronto"
+    name: "Negociação",
+    category: "Scrum Master - Soft Skills",
+    level: "Intermediário",
+    description: "Alinhar expectativas entre equipe e stakeholders"
   },
+  // Scrum Master - Hard Skills
   {
     id: 10,
-    name: "Velocity Tracking",
-    category: "Métricas Ágeis",
-    level: "Intermediário",
-    description: "Medir e acompanhar velocidade da equipe"
+    name: "Conhecimento avançado do framework Scrum",
+    category: "Scrum Master - Hard Skills",
+    level: "Expert",
+    description: "Eventos, artefatos, papéis",
+    isCore: true
   },
   {
     id: 11,
-    name: "Burndown Charts",
-    category: "Métricas Ágeis",
-    level: "Básico",
-    description: "Criar e interpretar gráficos de burndown"
+    name: "Domínio de ferramentas ágeis",
+    category: "Scrum Master - Hard Skills",
+    level: "Avançado",
+    description: "Jira, Trello, Azure DevOps"
   },
   {
     id: 12,
-    name: "Stakeholder Management",
-    category: "Soft Skills Ágeis",
+    name: "Métricas ágeis",
+    category: "Scrum Master - Hard Skills",
+    level: "Intermediário",
+    description: "Velocidade da equipe, burndown charts"
+  },
+  // Product Owner - Soft Skills
+  {
+    id: 13,
+    name: "Visão estratégica do negócio",
+    category: "Product Owner - Soft Skills",
+    level: "Expert",
+    description: "Alinhar o produto às necessidades do cliente",
+    isCore: true
+  },
+  {
+    id: 14,
+    name: "Priorização",
+    category: "Product Owner - Soft Skills",
     level: "Avançado",
-    description: "Gerenciar expectativas e comunicação com stakeholders"
+    description: "Ordenar o Product Backlog com base em valor e metas"
+  },
+  {
+    id: 15,
+    name: "Comunicação eficaz",
+    category: "Product Owner - Soft Skills",
+    level: "Avançado",
+    description: "Atuar como ponte entre stakeholders e equipe"
+  },
+  {
+    id: 16,
+    name: "Autonomia",
+    category: "Product Owner - Soft Skills",
+    level: "Intermediário",
+    description: "Tomar decisões rápidas sobre escopo e direção do produto"
+  },
+  {
+    id: 17,
+    name: "Disponibilidade",
+    category: "Product Owner - Soft Skills",
+    level: "Básico",
+    description: "Estar acessível para esclarecer dúvidas da equipe"
+  },
+  {
+    id: 18,
+    name: "Análise de métricas",
+    category: "Product Owner - Soft Skills",
+    level: "Avançado",
+    description: "Avaliar resultados e maximizar valor das entregas"
+  },
+  // Product Owner - Hard Skills
+  {
+    id: 19,
+    name: "Gestão de backlog",
+    category: "Product Owner - Hard Skills",
+    level: "Expert",
+    description: "User stories, épicos, refinamento",
+    isCore: true
+  },
+  {
+    id: 20,
+    name: "Técnicas de priorização",
+    category: "Product Owner - Hard Skills",
+    level: "Avançado",
+    description: "MoSCoW, Value vs. Effort"
+  },
+  {
+    id: 21,
+    name: "Conhecimento em UX/UI",
+    category: "Product Owner - Hard Skills",
+    level: "Intermediário",
+    description: "Para alinhar expectativas do cliente"
+  },
+  // Desenvolvedores - Soft Skills
+  {
+    id: 22,
+    name: "Multidisciplinaridade",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Avançado",
+    description: "Habilidades técnicas diversas para entregar incrementos"
+  },
+  {
+    id: 23,
+    name: "Auto-organização",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Intermediário",
+    description: "Planejar e executar tarefas sem microgerenciamento"
+  },
+  {
+    id: 24,
+    name: "Colaboração",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Avançado",
+    description: "Trabalhar em conjunto para atingir a meta da Sprint"
+  },
+  {
+    id: 25,
+    name: "Comprometimento",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Intermediário",
+    description: "Cumprir prazos e definições de pronto (DoD)"
+  },
+  {
+    id: 26,
+    name: "Melhoria contínua",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Intermediário",
+    description: "Aplicar feedbacks da Retrospective"
+  },
+  {
+    id: 27,
+    name: "Adaptabilidade",
+    category: "Desenvolvedores - Soft Skills",
+    level: "Avançado",
+    description: "Ajustar-se a mudanças no Backlog ou requisitos"
+  },
+  // Desenvolvedores - Hard Skills
+  {
+    id: 28,
+    name: "Stack técnico relevante",
+    category: "Desenvolvedores - Hard Skills",
+    level: "Expert",
+    description: "Java, Python, React, SQL",
+    isCore: true
+  },
+  {
+    id: 29,
+    name: "Versionamento de código",
+    category: "Desenvolvedores - Hard Skills",
+    level: "Avançado",
+    description: "Git, GitFlow"
+  },
+  {
+    id: 30,
+    name: "Testes automatizados",
+    category: "Desenvolvedores - Hard Skills",
+    level: "Intermediário",
+    description: "TDD, BDD, ferramentas como Selenium/JUnit"
   }
 ];
 
