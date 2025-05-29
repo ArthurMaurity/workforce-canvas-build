@@ -62,14 +62,14 @@ const initialTeams: Team[] = [
     id: 1,
     name: "Team Alpha",
     project: "E-commerce Platform",
-    members: [],
+    members: [mockEmployees[0], mockEmployees[2]],
     maxMembers: 5
   },
   {
     id: 2,
     name: "Team Beta",
     project: "Mobile App",
-    members: [],
+    members: [mockEmployees[1], mockEmployees[3]],
     maxMembers: 4
   },
 ];
@@ -77,53 +77,6 @@ const initialTeams: Team[] = [
 const DragDropTeamManager: React.FC = () => {
   const [employees] = useState<Employee[]>(mockEmployees);
   const [teams, setTeams] = useState<Team[]>(initialTeams);
-  const [draggedEmployee, setDraggedEmployee] = useState<Employee | null>(null);
-  const [dragOverTeam, setDragOverTeam] = useState<number | null>(null);
-
-  const handleDragStart = (e: React.DragEvent, employee: Employee) => {
-    setDraggedEmployee(employee);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent, teamId: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverTeam(teamId);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverTeam(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, teamId: number) => {
-    e.preventDefault();
-    setDragOverTeam(null);
-    
-    if (!draggedEmployee) return;
-
-    const targetTeam = teams.find(team => team.id === teamId);
-    if (!targetTeam) return;
-
-    if (targetTeam.members.length >= targetTeam.maxMembers) {
-      alert('Esta equipe já atingiu o número máximo de membros!');
-      return;
-    }
-
-    if (targetTeam.members.find(member => member.id === draggedEmployee.id)) {
-      alert('Este colaborador já está nesta equipe!');
-      return;
-    }
-
-    setTeams(prevTeams => 
-      prevTeams.map(team => 
-        team.id === teamId 
-          ? { ...team, members: [...team.members, draggedEmployee] }
-          : { ...team, members: team.members.filter(member => member.id !== draggedEmployee.id) }
-      )
-    );
-
-    setDraggedEmployee(null);
-  };
 
   const handleRemoveMember = (teamId: number, employeeId: number) => {
     setTeams(prevTeams =>
@@ -152,9 +105,9 @@ const DragDropTeamManager: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
       {/* Header */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold mb-2">Organização de Equipes</h2>
+        <h2 className="text-2xl font-bold mb-2">Visualização de Equipes</h2>
         <p className="text-muted-foreground">
-          Arraste os colaboradores para as equipes desejadas
+          Visualize a distribuição atual dos colaboradores nas equipes
         </p>
       </div>
 
@@ -172,9 +125,7 @@ const DragDropTeamManager: React.FC = () => {
               {availableEmployees.map((employee) => (
                 <div
                   key={employee.id}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, employee)}
-                  className="p-3 border rounded-lg cursor-move hover:bg-muted/50 transition-colors bg-white"
+                  className="p-3 border rounded-lg bg-white"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
@@ -215,14 +166,7 @@ const DragDropTeamManager: React.FC = () => {
             {teams.map((team) => (
               <Card
                 key={team.id}
-                className={`transition-all duration-200 ${
-                  dragOverTeam === team.id 
-                    ? 'ring-2 ring-primary bg-primary/5 scale-[1.02]' 
-                    : 'hover:shadow-md'
-                }`}
-                onDragOver={(e) => handleDragOver(e, team.id)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, team.id)}
+                className="hover:shadow-md transition-shadow"
               >
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center justify-between">
@@ -264,15 +208,7 @@ const DragDropTeamManager: React.FC = () => {
                   {team.members.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-8 text-muted-foreground border-2 border-dashed border-muted rounded-lg">
                       <Plus className="h-8 w-8 mb-2 opacity-50" />
-                      <p className="text-sm">Arraste colaboradores aqui</p>
-                    </div>
-                  )}
-                  
-                  {dragOverTeam === team.id && (
-                    <div className="absolute inset-0 bg-primary/10 border-2 border-primary border-dashed rounded-lg flex items-center justify-center pointer-events-none">
-                      <div className="bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm font-medium">
-                        Solte aqui para adicionar à equipe
-                      </div>
+                      <p className="text-sm">Nenhum membro alocado</p>
                     </div>
                   )}
                 </CardContent>
